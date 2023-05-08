@@ -1,8 +1,7 @@
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import Qt
-
-import sys, psycopg2, os
+import sys, psycopg2, os, csv
 
 class MyWidget(QWidget):
     def __init__(self):
@@ -115,10 +114,10 @@ class MyWidget(QWidget):
             for s in st:
                 cursor.execute(f'''SELECT * from {s[0]};''')
                 rows = cursor.fetchall()
-                with open(f'./backupDB/{s[0]}.txt', 'w', encoding='utf-8-sig') as f:
+                with open(f'./backupDB/{s[0]}.csv', 'w', encoding='utf-8-sig') as f:
+                    writer = csv.writer(f)
                     for row in rows:
-                        f.write(str(row))
-                        f.write('\n')
+                        writer.writerow(row)
                     f.close()
                     # print('Backup:' + s[0] + '  ......')
                     alert= QMessageBox(self)
@@ -129,6 +128,26 @@ class MyWidget(QWidget):
             alert.information(self, 'error', 'Cannot backup database !')
 
     def InsertDatabase(self):
+        # try:
+        #     db = psycopg2.connect(self.DATABASE_URL, sslmode='require')
+        #     cursor = db.cursor()
+        #     cursor.execute("select relname from pg_class where relkind='r' and relname !~ '^(pg_|sql_)';")
+        #     st = cursor.fetchall()
+        #     for s in st:
+        #         cursor.execute(f'''SELECT * from {s[0]};''')
+        #         rows = cursor.fetchall()
+        #         with open(f'./backupDB/{s[0]}.csv', 'w', encoding='utf-8-sig') as f:
+        #             writer = csv.writer(f)
+        #             for row in rows:
+        #                 writer.writerow(row)
+        #             f.close()
+        #             alert= QMessageBox(self)
+        #             alert.information(self, 'hint', f'{str(s[0])} backup complete!')
+        #     cursor.close()
+        # except:
+        #     alert= QMessageBox(self)
+        #     alert.information(self, 'error', 'Cannot backup database !')
+
         print(self.URL.text())
 
 if __name__ == '__main__':
